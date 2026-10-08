@@ -1,0 +1,32 @@
+# Hand-written EN->DE customer-support sentences. Columns: source, reference, system A, system B.
+# System A imitates a fluent system; system B imitates a literal word-by-word system. Not real MT output.
+Your order has been shipped.	Ihre Bestellung wurde versandt.	Ihre Bestellung wurde versandt.	Ihre Bestellung ist verschifft worden.
+Please reset your password using the link below.	Bitte setzen Sie Ihr Passwort über den untenstehenden Link zurück.	Bitte setzen Sie Ihr Passwort über den Link unten zurück.	Bitte zurücksetzen Sie Ihr Passwort mit dem Link unten.
+The invoice for March is attached.	Die Rechnung für März ist beigefügt.	Die Rechnung für März ist angehängt.	Die Rechnung für März ist beigefügt.
+We are sorry for the inconvenience.	Wir entschuldigen uns für die Unannehmlichkeiten.	Wir entschuldigen uns für die Unannehmlichkeiten.	Wir sind traurig für die Unbequemlichkeit.
+The app crashes when I open the settings.	Die App stürzt ab, wenn ich die Einstellungen öffne.	Die App stürzt ab, wenn ich die Einstellungen öffne.	Die App crasht, wenn ich öffne die Einstellungen.
+Delivery usually takes three to five working days.	Die Lieferung dauert in der Regel drei bis fünf Werktage.	Die Lieferung dauert normalerweise drei bis fünf Werktage.	Lieferung nimmt normalerweise drei bis fünf Arbeitstage.
+You will receive a refund within ten days.	Sie erhalten innerhalb von zehn Tagen eine Rückerstattung.	Sie erhalten innerhalb von zehn Tagen eine Rückerstattung.	Sie werden eine Rückzahlung innerhalb zehn Tagen bekommen.
+Two-factor authentication is now enabled.	Die Zwei-Faktor-Authentifizierung ist jetzt aktiviert.	Die Zwei-Faktor-Authentifizierung ist jetzt aktiviert.	Zwei-Faktor-Authentifizierung ist nun eingeschaltet.
+Your account has been locked for security reasons.	Ihr Konto wurde aus Sicherheitsgründen gesperrt.	Ihr Konto wurde aus Sicherheitsgründen gesperrt.	Ihr Konto ist für Sicherheitsgründe geschlossen worden.
+Can you send me a copy of the contract?	Können Sie mir eine Kopie des Vertrags schicken?	Können Sie mir eine Kopie des Vertrags senden?	Können Sie senden mir eine Kopie von dem Vertrag?
+The package was delivered to the wrong address.	Das Paket wurde an die falsche Adresse geliefert.	Das Paket wurde an die falsche Adresse zugestellt.	Das Paket wurde zu der falschen Adresse geliefert.
+Our support team is available around the clock.	Unser Support-Team ist rund um die Uhr erreichbar.	Unser Support-Team ist rund um die Uhr erreichbar.	Unser Unterstützungsteam ist um die Uhr verfügbar.
+The new version fixes several bugs.	Die neue Version behebt mehrere Fehler.	Die neue Version behebt mehrere Fehler.	Die neue Version repariert einige Bugs.
+Please update the app to the latest version.	Bitte aktualisieren Sie die App auf die neueste Version.	Bitte aktualisieren Sie die App auf die neueste Version.	Bitte updaten Sie die App zu der letzten Version.
+I was charged twice this month.	Mir wurde diesen Monat doppelt etwas berechnet.	Mir wurde diesen Monat zweimal etwas berechnet.	Ich wurde zweimal diesen Monat geladen.
+The payment failed, but the money left my account.	Die Zahlung ist fehlgeschlagen, aber das Geld wurde von meinem Konto abgebucht.	Die Zahlung ist fehlgeschlagen, aber das Geld wurde von meinem Konto abgebucht.	Die Zahlung scheiterte, aber das Geld verließ mein Konto.
+Where can I find my tracking number?	Wo finde ich meine Sendungsnummer?	Wo finde ich meine Sendungsnummer?	Wo kann ich meine Verfolgungsnummer finden?
+Your subscription will renew automatically.	Ihr Abonnement verlängert sich automatisch.	Ihr Abonnement wird automatisch verlängert.	Ihr Abonnement wird sich automatisch erneuern.
+We could not verify your email address.	Wir konnten Ihre E-Mail-Adresse nicht bestätigen.	Wir konnten Ihre E-Mail-Adresse nicht verifizieren.	Wir konnten nicht Ihre E-Mail-Adresse verifizieren.
+The report export fails with an error.	Der Berichtsexport schlägt mit einem Fehler fehl.	Der Export des Berichts schlägt mit einem Fehler fehl.	Der Bericht Export versagt mit einem Fehler.
+Thank you for your patience.	Vielen Dank für Ihre Geduld.	Vielen Dank für Ihre Geduld.	Danke für Ihre Geduld.
+Your data will be deleted within thirty days.	Ihre Daten werden innerhalb von dreißig Tagen gelöscht.	Ihre Daten werden innerhalb von dreißig Tagen gelöscht.	Ihre Daten werden gelöscht innerhalb dreißig Tage.
+The parcel arrived damaged.	Das Paket ist beschädigt angekommen.	Das Paket kam beschädigt an.	Das Paket ist beschädigt angekommen.
+Please contact us if the problem persists.	Bitte kontaktieren Sie uns, wenn das Problem weiterhin besteht.	Bitte kontaktieren Sie uns, falls das Problem weiterhin besteht.	Bitte kontaktieren Sie uns, wenn das Problem bleibt.
+Your password must contain at least eight characters.	Ihr Passwort muss mindestens acht Zeichen enthalten.	Ihr Passwort muss mindestens acht Zeichen enthalten.	Ihr Passwort muss wenigstens acht Charaktere beinhalten.
+The search function does not work on the reports page.	Die Suchfunktion funktioniert auf der Berichtsseite nicht.	Die Suchfunktion funktioniert auf der Berichtsseite nicht.	Die Suche Funktion arbeitet nicht auf der Berichte Seite.
+You can change your delivery address before the order ships.	Sie können Ihre Lieferadresse ändern, bevor die Bestellung versandt wird.	Sie können Ihre Lieferadresse ändern, bevor die Bestellung verschickt wird.	Sie können Ihre Lieferadresse wechseln, bevor die Bestellung verschifft.
+We have received your request.	Wir haben Ihre Anfrage erhalten.	Wir haben Ihre Anfrage erhalten.	Wir haben Ihre Anfrage bekommen.
+The notification settings were reset after the update.	Die Benachrichtigungseinstellungen wurden nach dem Update zurückgesetzt.	Die Benachrichtigungseinstellungen wurden nach dem Update zurückgesetzt.	Die Benachrichtigung Einstellungen wurden zurückgesetzt nach dem Update.
+Your feedback helps us improve our service.	Ihr Feedback hilft uns, unseren Service zu verbessern.	Ihr Feedback hilft uns, unseren Service zu verbessern.	Ihre Rückmeldung hilft uns unseren Dienst verbessern.

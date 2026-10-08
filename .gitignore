@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.pytest_cache/
+.coverage
+htmlcov/
+build/
+dist/
+# DVC adds its own .gitignore entries for stage outputs
+/reports/review.sqlite
+/runs

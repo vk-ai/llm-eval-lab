@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+      - name: Unit + pipeline tests (offline; DVC and COMET tests skip without their extras)
+        run: pytest -q --cov=llm_eval_lab --cov-report=term
+      - name: Demo run
+        run: python demo/run_demo.py
+
+  dvc-and-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install with DVC
+        run: pip install -e ".[dev,dvc]"
+      - name: DVC tests (repro, lock-hash check, push/pull round trip to a local remote)
+        run: pytest -q -m dvc
+      - name: Rebuild the pipeline from scratch
+        run: dvc repro
+      - name: Metrics vs the committed reports/metrics.json
+        run: dvc metrics diff HEAD --md >> "$GITHUB_STEP_SUMMARY"
+      - name: Regression gate (fails the build on a regression)
+        run: llm-eval gate
+      - name: Model and system cards
+        run: llm-eval card
+      - uses: actions/upload-artifact@v4
+        with:
+          name: eval-reports
+          path: reports/

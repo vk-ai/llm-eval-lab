@@ -1,0 +1,12 @@
+testset:
+  version: v2   # v1 = 240 easy tickets; v2 = v1 + 80 hard tickets + adjudicated corrections
+  seed: 7
+systems: [rules-v1, nb-v1]
+compare:
+  baseline: rules-v1
+  candidate: nb-v1
+bootstrap:
+  n_resamples: 1000
+  seed: 0
+mt:
+  comet: false  # true needs `pip install .[comet]` and a ~2.3 GB model download

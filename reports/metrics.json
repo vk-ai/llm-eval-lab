@@ -1,0 +1,23 @@
+{
+  "comparison": {
+    "macro_f1_delta": 0.167846,
+    "macro_f1_p": 0.000999001,
+    "mcnemar_p": 1.49444e-12
+  },
+  "mt_sys_a": {
+    "bleu": 84.31,
+    "chrf_pp": 90.81
+  },
+  "mt_sys_b": {
+    "bleu": 26.78,
+    "chrf_pp": 57.2
+  },
+  "nb-v1": {
+    "accuracy": 0.9625,
+    "macro_f1": 0.9624
+  },
+  "rules-v1": {
+    "accuracy": 0.7906,
+    "macro_f1": 0.7946
+  }
+}

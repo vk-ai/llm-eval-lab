@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "llm-eval-lab"
+version = "0.1.0"
+description = "Evaluation methodology lab: DVC-versioned test sets, P/R/F1 with bootstrap CIs, paired significance tests, a human-review queue with Cohen's kappa, BLEU/chrF++ (COMET optional), model cards and a CI regression gate."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.11"
+dependencies = [
+  "numpy>=1.26",
+  "sacrebleu>=2.4",
+  "pyyaml>=6",
+]
+
+[project.optional-dependencies]
+dvc = ["dvc>=3.50"]
+comet = ["unbabel-comet>=2.2"]
+dev = ["pytest>=8", "pytest-cov>=5"]
+
+[project.scripts]
+llm-eval = "llm_eval_lab.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["dvc: needs the dvc CLI", "comet: needs unbabel-comet and a model download"]

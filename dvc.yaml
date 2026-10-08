@@ -1,0 +1,39 @@
+stages:
+  testsets:
+    cmd: llm-eval make-testsets --out data/testsets --seeds seeds
+    deps:
+      - src/llm_eval_lab/datasets.py
+      - seeds/mt_en_de.tsv
+      - seeds/corrections.jsonl
+    params:
+      - testset.version
+      - testset.seed
+    outs:
+      - data/testsets
+  predict:
+    cmd: llm-eval predict
+    deps:
+      - data/testsets
+      - src/llm_eval_lab/systems.py
+    params:
+      - systems
+      - testset.version
+    outs:
+      - runs
+  evaluate:
+    cmd: llm-eval evaluate --out reports/eval.json --metrics reports/metrics.json
+    deps:
+      - data/testsets
+      - runs
+      - src/llm_eval_lab/metrics.py
+      - src/llm_eval_lab/stats.py
+      - src/llm_eval_lab/mt.py
+    params:
+      - compare
+      - bootstrap
+      - mt
+    outs:
+      - reports/eval.json
+    metrics:
+      - reports/metrics.json:
+          cache: false

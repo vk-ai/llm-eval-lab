@@ -1,0 +1,12 @@
+# Regression gate for the candidate in params.yaml (compare.candidate).
+baseline: baselines/baseline.json
+max_drop:          # absolute drop allowed vs the stored baseline
+  macro_f1: 0.02
+  accuracy: 0.02
+min:               # hard floors
+  macro_f1: 0.80
+significance:      # also fail if the candidate is significantly worse (McNemar, paired)
+  alpha: 0.05
+mt_max_drop:
+  sys_a: {bleu: 1.0, chrf++: 1.0}
+allow_testset_change: false

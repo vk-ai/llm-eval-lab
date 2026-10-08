@@ -1,0 +1,96 @@
+schema: '2.0'
+stages:
+  testsets:
+    cmd: llm-eval make-testsets --out data/testsets --seeds seeds
+    deps:
+    - path: seeds/corrections.jsonl
+      hash: md5
+      md5: d41d8cd98f00b204e9800998ecf8427e
+      size: 0
+    - path: seeds/mt_en_de.tsv
+      hash: md5
+      md5: 8431174fffa7620958712723728cf689
+      size: 6129
+    - path: src/llm_eval_lab/datasets.py
+      hash: md5
+      md5: 7747ffa6474739c38c3f94683793266d
+      size: 7907
+    params:
+      params.yaml:
+        testset.seed: 7
+        testset.version: v2
+    outs:
+    - path: data/testsets
+      hash: md5
+      md5: 62a88274a3c019012166f4c12cff4152.dir
+      size: 71893
+      nfiles: 4
+  predict:
+    cmd: llm-eval predict
+    deps:
+    - path: data/testsets
+      hash: md5
+      md5: 62a88274a3c019012166f4c12cff4152.dir
+      size: 71893
+      nfiles: 4
+    - path: src/llm_eval_lab/systems.py
+      hash: md5
+      md5: 857ab155d991dd3ddf607d4ea4424ef1
+      size: 6235
+    params:
+      params.yaml:
+        systems:
+        - rules-v1
+        - nb-v1
+        testset.version: v2
+    outs:
+    - path: runs
+      hash: md5
+      md5: 8d603f6184e0f1f70494eb343aaa28f3.dir
+      size: 34005
+      nfiles: 2
+  evaluate:
+    cmd: llm-eval evaluate --out reports/eval.json --metrics 
+      reports/metrics.json
+    deps:
+    - path: data/testsets
+      hash: md5
+      md5: 62a88274a3c019012166f4c12cff4152.dir
+      size: 71893
+      nfiles: 4
+    - path: runs
+      hash: md5
+      md5: 8d603f6184e0f1f70494eb343aaa28f3.dir
+      size: 34005
+      nfiles: 2
+    - path: src/llm_eval_lab/metrics.py
+      hash: md5
+      md5: ad451b6354ddb8f37f844c8e8d026943
+      size: 3371
+    - path: src/llm_eval_lab/mt.py
+      hash: md5
+      md5: 1296f0259bd500ada3cc4a9acf629eeb
+      size: 2524
+    - path: src/llm_eval_lab/stats.py
+      hash: md5
+      md5: 024621b8cb89aa551f3eb956149ff154
+      size: 4217
+    params:
+      params.yaml:
+        bootstrap:
+          n_resamples: 1000
+          seed: 0
+        compare:
+          baseline: rules-v1
+          candidate: nb-v1
+        mt:
+          comet: false
+    outs:
+    - path: reports/eval.json
+      hash: md5
+      md5: 1eb579628fc6bc1a63e1132b42c1310b
+      size: 4793
+    - path: reports/metrics.json
+      hash: md5
+      md5: db8fc8c13afee7cfcdcca3f3a59653a7
+      size: 372
