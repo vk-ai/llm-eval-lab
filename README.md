@@ -132,9 +132,45 @@ Notes on reading it:
   scored against the generator's own gold. With real reviewers this is where
   label errors in the test set would surface.
 
+## Judge calibration (judge vs humans, against the human ceiling)
+
+An automated judge is only useful if it agrees with people about as well as people
+agree with each other. `llm-eval calibrate` measures:
+
+- **human-human kappa**: mean pairwise Cohen's kappa between reviewers (the ceiling),
+- **judge-human kappa**: mean kappa between the judge and each reviewer,
+- **gap** = judge-human minus human-human,
+
+each with a 95% bootstrap CI from the same item resamples (so the gap CI is paired).
+The `judge_calibration` block in `gate.yaml` fails the run when there are fewer than
+150 items, when the judge-human CI lower bound is under 0.6, or when the judge trails
+the human ceiling by more than 0.05. CI runs it after the regression gate.
+
+```text
+$ llm-eval calibrate --judge nb-v1 --simulate-sample 50     # FAILED (too few items)
+  judge-human 0.820 [0.702, 0.909]   human-human 0.785 [0.670, 0.892]
+$ llm-eval calibrate --judge nb-v1 --simulate-sample 200    # PASSED
+  judge-human 0.838 [0.796, 0.874]   human-human 0.755 [0.697, 0.808]   gap +0.082 [+0.040, +0.129]
+$ llm-eval calibrate --judge rules-v1 --simulate-sample 320 # FAILED (gap -0.118)
+  judge-human 0.635 [0.581, 0.685]   human-human 0.753 [0.704, 0.794]
+```
+
+The N=50 run shows the sample-size problem: the CI is about 0.2 wide, so you can't
+tell a good judge from a mediocre one. Reading these honestly: the "judge" here is
+the toy `nb-v1` classifier, and it beats the human ceiling only because the simulated
+reviewers are 85-92% accurate while `nb-v1` is 96% accurate on this synthetic data.
+Without `--simulate-sample` it reads real labels from the review queue
+(`reports/review.sqlite`); that queue is biased toward disagreements, so use a random
+sample for calibration.
+
+Why: [r/LLMDevs "how do you know the judge agrees with a human?"](https://www.reddit.com/r/LLMDevs/comments/1uee3l7/if_youre_running_an_llmasjudge_in_your_evals_how/),
+[r/LangChain calibration-set size](https://www.reddit.com/r/LangChain/comments/1toeynq/how_big_does_your_llmasjudge_calibration_set_need/),
+[arXiv 2606.19544](https://arxiv.org/html/2606.19544v1),
+[t1mdurden/judge-calibration](https://github.com/t1mdurden/judge-calibration).
+
 ## Tests
 
-`pytest -q` gives **52 passed, 1 skipped** in about 25 seconds with the `dvc`
+`pytest -q` gives **60 passed, 1 skipped** in about 25 seconds with the `dvc`
 extra installed (the 2 DVC tests skip without it; the COMET test skips unless
 `[comet]` is installed).
 
@@ -142,6 +178,7 @@ extra installed (the 2 DVC tests skip without it; the COMET test skips unless
 - `test_stats.py`: McNemar against hand-computed exact and chi-squared p-values, permutation test on identical / clearly different / barely different systems, paired bootstrap direction.
 - `test_agreement.py`: the textbook kappa example (p_o 0.7, p_e 0.5, κ 0.4), perfect and systematic disagreement, CI.
 - `test_review.py`: enqueue reasons and idempotence, blind labelling, two-label cap, adjudication → corrections, kappa from simulated raters, persistence.
+- `test_calibration.py`: kappa maths against `cohens_kappa`, CI shrinks with N (50 vs 400), gate passes a human-level judge, fails one below the human ceiling and fails a too-small set, review-queue alignment, CLI end to end.
 - `test_mt.py`: identity = 100, chrF++ vs BLEU on a partial match, fluent system beats literal one with a CI below zero, explicit error when COMET is missing.
 - `test_datasets.py`, `test_systems.py`: determinism, v1 ⊂ v2, corrections only in v2, train/test disjoint.
 - `test_pipeline.py`: CLI end to end, the committed baseline matches a fresh run, the gate fails for `nb-small`, blocks a silent test-set change, writes the GitHub summary.
@@ -165,7 +202,7 @@ regression, and uploads the reports and cards as an artifact.
 - **The intent data is synthetic,** generated from templates. Template-generated examples are not independent, so the CIs are optimistic.
 - **The MT set is 30 hand-written EN→DE sentences.** The two "systems" are hand-written variants (fluent vs literal), not MT output. Real MT evaluation needs far more data.
 - **COMET is not run in CI.** I ran it once locally on CPU (`unbabel-comet` 2.2.7, `Unbabel/wmt22-comet-da`, about 55 s including model load): sys_a **0.972**, sys_b **0.910**, the same ranking as BLEU and chrF++. `unbabel-comet` 2.2.7 also needed `setuptools<80` installed for an old `pkg_resources` import. The `comet` pytest marker covers it when the extra is installed.
-- **Reviewers are simulated** in the demo and tests (seeded random accuracy). There is no web UI; reviewing is through the CLI.
+- **Reviewers are simulated** in the demo, tests and the CI calibration gate (seeded random accuracy), and the calibration "judge" is the toy `nb-v1` classifier, not an LLM judge. The calibration thresholds (150 items, 0.6, 0.05) are my choices, not a standard. There is no web UI; reviewing is through the CLI.
 - **The DVC remote is a local directory.** An S3/GCS remote is a one-line `dvc remote add` change that I haven't tested.
 - **The MT gate check is trivial today,** because the MT hypotheses are fixed files. It guards against scorer or tokenizer changes, not model changes.
 

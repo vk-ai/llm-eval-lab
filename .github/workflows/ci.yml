@@ -46,6 +46,8 @@ jobs:
         run: dvc metrics diff HEAD --md >> "$GITHUB_STEP_SUMMARY"
       - name: Regression gate (fails the build on a regression)
         run: llm-eval gate
+      - name: Judge calibration gate (simulated raters; fails if judge trails the human ceiling)
+        run: llm-eval calibrate --judge nb-v1 --simulate-sample 320
       - name: Model and system cards
         run: llm-eval card
       - uses: actions/upload-artifact@v4
