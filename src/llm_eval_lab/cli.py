@@ -9,6 +9,7 @@ import tempfile
 from pathlib import Path
 
 from . import LABELS
+from . import calibration as calib
 from .cards import model_card, system_card
 from .datasets import build_all, read_jsonl
 from .gate import load_json, load_rules, make_baseline, run_gate
@@ -124,6 +125,52 @@ def cmd_review(a) -> int:
     return 0
 
 
+def cmd_calibrate(a) -> int:
+    """Judge-vs-human agreement against the human-human ceiling, as a gate (exit 1 on fail)."""
+    p = load_params(a.params)
+    judge_preds = load_preds(Path(a.runs) / f"{a.judge}.jsonl")
+    if a.simulate_sample:
+        # Random (not disagreement-biased) calibration sample labelled by SIMULATED raters.
+        import random
+
+        rows = read_jsonl(testset_path(Path(a.data), p["testset"]["version"]))
+        rows = random.Random(a.seed).sample(rows, min(a.simulate_sample, len(rows)))
+        q = ReviewQueue(":memory:", LABELS, raters_per_item=len(a.rater_accuracy))
+        for r in rows:
+            q.enqueue(r["id"], r["text"], r["label"], ["calibration"])
+        gold = {r[0]: r[1] for r in q.db.execute("SELECT id, gold FROM items")}
+        for spec in a.rater_accuracy:
+            name, acc = spec.split("=")
+            rater = simulate_rater(name, float(acc), LABELS, seed=a.seed)
+            while (item := q.next_item(name)) is not None:
+                q.submit(item["id"], name, rater(gold[item["id"]]))
+    else:
+        q = ReviewQueue(a.db, LABELS)
+    judge, humans, ids = calib.from_queue(q, judge_preds)
+    cal = calib.calibrate(judge, humans, n_resamples=a.resamples, seed=a.seed)
+    rules = (load_rules(a.rules).get("judge_calibration") or {})
+    ok, checks = calib.gate(cal, rules)
+    out = {"judge": a.judge, **cal.to_dict(), "passed": ok, "checks": checks,
+           "simulated_raters": bool(a.simulate_sample)}
+    _write_json(a.out, out)
+    ci = out["ci95"]
+    md = [f"## Judge calibration ({a.judge}, n={cal.n}): " + ("PASSED" if ok else "FAILED"), "",
+          f"- judge-human kappa {out['judge_human_kappa']} [{ci['judge_human'][0]}, {ci['judge_human'][1]}] ({out['band']})",
+          f"- human-human kappa {out['human_human_kappa']} [{ci['human_human'][0]}, {ci['human_human'][1]}] (ceiling)",
+          f"- gap {out['gap']:+} [{ci['gap'][0]:+}, {ci['gap'][1]:+}]", "",
+          "| Check | Baseline | Current | Rule | Result |", "|---|---|---|---|---|"]
+    md += [f"| {c['check']} | {c.get('baseline', '')} | {c['current']} | {c['rule']} | {'ok' if c['ok'] else '**FAIL**'} |" for c in checks]
+    if a.simulate_sample:
+        md.append("\n_Raters are simulated (seeded random accuracy)._")
+    text = "\n".join(md) + "\n"
+    print(text)
+    summary = os.environ.get("GITHUB_STEP_SUMMARY")
+    if summary:
+        with open(summary, "a") as f:
+            f.write(text)
+    return 0 if ok else 1
+
+
 def build_parser() -> argparse.ArgumentParser:
     ap = argparse.ArgumentParser(prog="llm-eval")
     ap.add_argument("--params", default="params.yaml")
@@ -175,6 +222,18 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--alice", type=float, default=0.92)
     s.add_argument("--bob", type=float, default=0.85)
     s.set_defaults(fn=cmd_review)
+
+    s = sub.add_parser("calibrate", help="judge-vs-human agreement vs the human-human ceiling (gate)")
+    s.add_argument("--judge", default="nb-v1", help="system whose predictions act as the judge")
+    s.add_argument("--db", default="reports/review.sqlite")
+    s.add_argument("--rules", default="gate.yaml")
+    s.add_argument("--out", default="reports/calibration.json")
+    s.add_argument("--simulate-sample", type=int, default=0,
+                   help="draw N random test items and have simulated raters label them")
+    s.add_argument("--rater-accuracy", nargs="+", default=["alice=0.92", "bob=0.85", "carol=0.88"])
+    s.add_argument("--resamples", type=int, default=1000)
+    s.add_argument("--seed", type=int, default=0)
+    s.set_defaults(fn=cmd_calibrate)
     return ap
 
 

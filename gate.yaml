@@ -10,3 +10,7 @@ significance:      # also fail if the candidate is significantly worse (McNemar,
 mt_max_drop:
   sys_a: {bleu: 1.0, chrf++: 1.0}
 allow_testset_change: false
+judge_calibration:  # `llm-eval calibrate`: judge must agree with humans about as well as humans agree
+  min_items: 150         # r/LangChain: kappa CI at N=50 is about +/-0.2; ~200 items to tighten it
+  min_kappa_lower: 0.6   # 95% CI lower bound of mean judge-human kappa
+  max_gap: 0.05          # judge-human kappa may trail human-human kappa by at most this
